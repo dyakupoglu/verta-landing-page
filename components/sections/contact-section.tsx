@@ -56,29 +56,21 @@ export function ContactSection() {
     setIsSubmitting(true);
 
     try {
-      // Convert data to URL-encoded format
-      const formBody = new URLSearchParams({
-        name: data.name,
-        email: data.email,
-        message: data.message,
-        _subject: "New Contact Form Submission",
-        _captcha: "false", // Disable CAPTCHA
-      });
-
-      const response = await fetch("https://formsubmit.co/vertaalimited@gmail.com", {
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
-        body: formBody.toString(),
+        body: JSON.stringify(data),
       });
+
+      const result = await response.json();
 
       if (response.ok) {
         alert("Thank you for reaching out! We will get back to you soon.");
         form.reset();
       } else {
-        const errorText = await response.text(); // Read HTML response
-        console.error("Form submission error:", errorText);
+        console.error("Form submission error:", result.error);
         alert("There was an issue submitting the form. Please try again later.");
       }
     } catch (error) {
